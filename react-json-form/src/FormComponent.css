@@ -1,7 +1,7 @@
-/* FormComponent.css */
+/* OnboardingForm.css */
 
 .form-container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -40,10 +40,23 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: #fff;
+    overflow-x: auto;
+    /* Allow horizontal scrolling if necessary */
 }
 
-.generated-json pre {
-    margin: 0;
-    font-size: 14px;
-    font-family: 'Courier New', Courier, monospace;
+.download-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.download-button:hover {
+    background-color: #0056b3;
 }

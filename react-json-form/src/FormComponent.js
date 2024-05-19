@@ -1,36 +1,37 @@
 import React, { useState } from 'react';
+import ReactJson from 'react-json-view';
 import './FormComponent.css';
 
-const FormComponent = () => {
-  const [action, setAction] = useState('');
-  const [serviceCiId, setServiceCiId] = useState('');
-  const [serviceDisplay, setServiceDisplay] = useState('');
-  const [serviceStaff, setServiceStaff] = useState('');
+const OnboardingForm = () => {
+  const [employeeName, setEmployeeName] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [department, setDepartment] = useState('');
+  const [role, setRole] = useState('');
   const [accountType, setAccountType] = useState('');
-  const [accountName, setAccountName] = useState('');
-  const [accountDescription, setAccountDescription] = useState('');
   const [safeName, setSafeName] = useState('');
   const [awsSecretKey, setAwsSecretKey] = useState('');
+  const [equipment, setEquipment] = useState('');
+  const [accessLevel, setAccessLevel] = useState('');
 
-  const handleActionChange = (e) => setAction(e.target.value);
-  const handleServiceCiIdChange = (e) => setServiceCiId(e.target.value);
-  const handleServiceDisplayChange = (e) => setServiceDisplay(e.target.value);
-  const handleServiceStaffChange = (e) => setServiceStaff(e.target.value);
+  const handleEmployeeNameChange = (e) => setEmployeeName(e.target.value);
+  const handleEmployeeIdChange = (e) => setEmployeeId(e.target.value);
+  const handleDepartmentChange = (e) => setDepartment(e.target.value);
+  const handleRoleChange = (e) => setRole(e.target.value);
   const handleAccountTypeChange = (e) => setAccountType(e.target.value);
-  const handleAccountNameChange = (e) => setAccountName(e.target.value);
-  const handleAccountDescriptionChange = (e) => setAccountDescription(e.target.value);
   const handleSafeNameChange = (e) => setSafeName(e.target.value);
   const handleAwsSecretKeyChange = (e) => setAwsSecretKey(e.target.value);
+  const handleEquipmentChange = (e) => setEquipment(e.target.value);
+  const handleAccessLevelChange = (e) => setAccessLevel(e.target.value);
 
   const generateJSON = () => {
     const json = {
-      action,
-      serviceCiId,
-      serviceDisplay,
-      serviceStaff,
+      employeeName,
+      employeeId,
+      department,
+      role,
       accountType,
-      accountName,
-      accountDescription
+      equipment,
+      accessLevel
     };
 
     if (accountType === 'CDX') {
@@ -48,7 +49,7 @@ const FormComponent = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'data.json';
+    link.download = 'onboarding_data.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -58,25 +59,20 @@ const FormComponent = () => {
     <div className="form-container">
       <form>
         <div className="form-group">
-          <label>Action:</label>
-          <select value={action} onChange={handleActionChange}>
-            <option value="" disabled>Select an option</option>
-            <option value="AddTheAcount">Add The Account</option>
-            <option value="DeleteTheAccount">Delete The Account</option>
-            <option value="ModifiedTheAccount">Modified The Account</option>
-          </select>
+          <label>Employee Name:</label>
+          <input type="text" value={employeeName} onChange={handleEmployeeNameChange} />
         </div>
         <div className="form-group">
-          <label>Service CI ID:</label>
-          <input type="text" value={serviceCiId} onChange={handleServiceCiIdChange} />
+          <label>Employee ID:</label>
+          <input type="text" value={employeeId} onChange={handleEmployeeIdChange} />
         </div>
         <div className="form-group">
-          <label>Service Display:</label>
-          <input type="text" value={serviceDisplay} onChange={handleServiceDisplayChange} />
+          <label>Department:</label>
+          <input type="text" value={department} onChange={handleDepartmentChange} />
         </div>
         <div className="form-group">
-          <label>Service Staff:</label>
-          <input type="text" value={serviceStaff} onChange={handleServiceStaffChange} />
+          <label>Role:</label>
+          <input type="text" value={role} onChange={handleRoleChange} />
         </div>
         <div className="form-group">
           <label>Account Type:</label>
@@ -86,18 +82,6 @@ const FormComponent = () => {
             <option value="AWS">AWS</option>
           </select>
         </div>
-        {accountType && (
-          <>
-            <div className="form-group">
-              <label>Account Name:</label>
-              <input type="text" value={accountName} onChange={handleAccountNameChange} />
-            </div>
-            <div className="form-group">
-              <label>Account Description:</label>
-              <input type="text" value={accountDescription} onChange={handleAccountDescriptionChange} />
-            </div>
-          </>
-        )}
         {accountType === 'CDX' && (
           <div className="form-group">
             <label>Safe Name:</label>
@@ -110,14 +94,22 @@ const FormComponent = () => {
             <input type="text" value={awsSecretKey} onChange={handleAwsSecretKeyChange} />
           </div>
         )}
+        <div className="form-group">
+          <label>Equipment Needed:</label>
+          <input type="text" value={equipment} onChange={handleEquipmentChange} />
+        </div>
+        <div className="form-group">
+          <label>Access Level:</label>
+          <input type="text" value={accessLevel} onChange={handleAccessLevelChange} />
+        </div>
       </form>
       <div className="generated-json">
         <h3>Generated JSON:</h3>
-        <pre>{JSON.stringify(generateJSON(), null, 2)}</pre>
-        <button onClick={handleDownload}>Download JSON</button>
+        <ReactJson src={generateJSON()} theme="monokai" />
+        <button className="download-button" onClick={handleDownload}>Download JSON</button>
       </div>
     </div>
   );
 };
 
-export default FormComponent;
+export default OnboardingForm;
