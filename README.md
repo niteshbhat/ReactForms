@@ -3,4 +3,9 @@ This project involves developing a web application using React that provides a d
 
 # ReactForms Demo
 
-[Watch the demo video](https://github.com/CyberTerminator-Solution/ReactForms/blob/dev/startphase/react-json-form/src/Demo.mp4)
+Here is a demo video of ReactForms:
+
+<video width="600" controls>
+  <source src="https://github.com/CyberTerminator-Solution/ReactForms/blob/dev/startphase/react-json-form/src/Demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
