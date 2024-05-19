@@ -55,32 +55,63 @@ const OnboardingForm = () => {
     document.body.removeChild(link);
   };
 
+  const handleSubmit = async () => {
+    const json = generateJSON();
+    const response = await fetch('https://your-api-endpoint.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(json),
+    });
+
+    if (response.ok) {
+      alert('Data submitted successfully!');
+    } else {
+      alert('Error submitting data');
+    }
+  };
+
   return (
     <div className="form-container">
       <form>
-        <div className="form-group">
-          <label>Employee Name:</label>
-          <input type="text" value={employeeName} onChange={handleEmployeeNameChange} />
+        <div className="form-row">
+          <div className="form-group">
+            <label>Employee Name:</label>
+            <input type="text" value={employeeName} onChange={handleEmployeeNameChange} />
+          </div>
+          <div className="form-group">
+            <label>Employee ID:</label>
+            <input type="text" value={employeeId} onChange={handleEmployeeIdChange} />
+          </div>
+          <div className="form-group">
+            <label>Department:</label>
+            <input type="text" value={department} onChange={handleDepartmentChange} />
+          </div>
         </div>
-        <div className="form-group">
-          <label>Employee ID:</label>
-          <input type="text" value={employeeId} onChange={handleEmployeeIdChange} />
+        <div className="form-row">
+          <div className="form-group">
+            <label>Role:</label>
+            <input type="text" value={role} onChange={handleRoleChange} />
+          </div>
+          <div className="form-group">
+            <label>Account Type:</label>
+            <select value={accountType} onChange={handleAccountTypeChange}>
+              <option value="" disabled>Select an option</option>
+              <option value="CDX">CDX</option>
+              <option value="AWS">AWS</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Equipment Needed:</label>
+            <input type="text" value={equipment} onChange={handleEquipmentChange} />
+          </div>
         </div>
-        <div className="form-group">
-          <label>Department:</label>
-          <input type="text" value={department} onChange={handleDepartmentChange} />
-        </div>
-        <div className="form-group">
-          <label>Role:</label>
-          <input type="text" value={role} onChange={handleRoleChange} />
-        </div>
-        <div className="form-group">
-          <label>Account Type:</label>
-          <select value={accountType} onChange={handleAccountTypeChange}>
-            <option value="" disabled>Select an option</option>
-            <option value="CDX">CDX</option>
-            <option value="AWS">AWS</option>
-          </select>
+        <div className="form-row">
+          <div className="form-group">
+            <label>Access Level:</label>
+            <input type="text" value={accessLevel} onChange={handleAccessLevelChange} />
+          </div>
         </div>
         {accountType === 'CDX' && (
           <div className="form-group">
@@ -94,19 +125,14 @@ const OnboardingForm = () => {
             <input type="text" value={awsSecretKey} onChange={handleAwsSecretKeyChange} />
           </div>
         )}
-        <div className="form-group">
-          <label>Equipment Needed:</label>
-          <input type="text" value={equipment} onChange={handleEquipmentChange} />
-        </div>
-        <div className="form-group">
-          <label>Access Level:</label>
-          <input type="text" value={accessLevel} onChange={handleAccessLevelChange} />
-        </div>
       </form>
       <div className="generated-json">
         <h3>Generated JSON:</h3>
         <ReactJson src={generateJSON()} theme="monokai" />
-        <button className="download-button" onClick={handleDownload}>Download JSON</button>
+        <div className="button-group">
+          <button className="download-button" onClick={handleDownload}>Download JSON</button>
+          <button className="submit-button" onClick={handleSubmit}>Submit</button>
+        </div>
       </div>
     </div>
   );
