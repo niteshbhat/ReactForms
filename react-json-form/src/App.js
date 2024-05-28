@@ -8,7 +8,7 @@ function App() {
         <
         header className = "App-header" >
         <
-        h1 > OnBoarding Form < /h1>  < /
+        h1 > AWS Json Generator Form < /h1>  < /
         header > <
         main >
         <

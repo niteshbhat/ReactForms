@@ -1,46 +1,59 @@
-/* OnboardingForm.css */
+/* AddAwsConfigurationForm.css */
 
 .form-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
 }
 
 .form-container h3 {
     text-align: center;
     margin-bottom: 20px;
+    font-size: 24px;
+    color: #333333;
 }
 
 .form-row {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 15px;
 }
 
 .form-group {
-    margin-bottom: 15px;
     flex: 1;
-    margin-right: 22px;
-    justify-content: space-between;
-    /* Add some space between columns */
+    margin-right: 10px;
+}
+
+.form-group:last-child {
+    margin-right: 0;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: #333333;
 }
 
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
+    padding: 2px;
+    border: 1px solid #211818;
     border-radius: 5px;
     font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 .generated-json {
@@ -48,9 +61,8 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: #f9f9f9;
     overflow-x: auto;
-    /* Allow horizontal scrolling if necessary */
 }
 
 .button-group {
@@ -68,7 +80,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s;
     flex: 1;
     margin: 0 5px;
 }
@@ -76,4 +88,5 @@
 .download-button:hover,
 .submit-button:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }

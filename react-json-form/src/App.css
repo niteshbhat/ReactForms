@@ -15,12 +15,12 @@
 
 .App-header {
     min-height: 5vh;
-    max-width: 800px;
+    max-width: 1200px;
     margin: auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
-    background-color: #f9f9f9;
+    background-color: #188bb8;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     color: rgb(17, 38, 114);
 }
