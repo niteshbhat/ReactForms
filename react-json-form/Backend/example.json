@@ -1,0 +1,47 @@
+{
+  "provider": {
+    "name": "aws"
+  },
+  "variables": [
+    {
+      "name": "region",
+      "description": "The AWS region to deploy in",
+      "type": "string",
+      "default": "us-west-2"
+    },
+    {
+      "name": "instance_type",
+      "description": "The type of instance to use",
+      "type": "string",
+      "default": "t2.micro"
+    },
+    {
+      "name": "instance_name",
+      "description": "The name of the instance",
+      "type": "string",
+      "default": "ExampleInstance"
+    }
+  ],
+  "resources": [
+    {
+      "type": "aws_instance",
+      "name": "example",
+      "properties": {
+        "ami": "var.ami",
+        "instance_type": "var.instance_type"
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "name": "instance_id",
+      "description": "The ID of the EC2 instance",
+      "value": "aws_instance.example.id"
+    },
+    {
+      "name": "public_ip",
+      "description": "The public IP of the EC2 instance",
+      "value": "aws_instance.example.public_ip"
+    }
+  ]
+}
