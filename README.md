@@ -1,10 +1,38 @@
-# ReactForms
-This project involves developing a web application using React that provides a dynamic form interface. The form collects user input and generates a JSON object based on the input data. 
+#AWS Terraform Generator Using React From.(POC)
 
-# ReactForms Demo
+## Description
+In this project, I showcase how to create a React form that generates a JSON file, which is then used to dynamically generate Terraform files using PowerShell.
 
-Here is a demo video of ReactForms:
+## Video Demonstration
+Check out the video demonstration on YouTube:
 
-<video width="600" controls>
-  <source src="https://github.com/CyberTerminator-Solution/ReactForms/blob/dev/startphase/react-json-form/src/Demo.mp4" type="video/mp4">
-</video>
+[![Watch the video](https://img.youtube.com/vi/8j0NQnemuPY/maxresdefault.jpg)](https://youtu.be/8j0NQnemuPY)
+
+## Features
+- React-based form for user input
+- JSON file generation
+- PowerShell script execution
+- Terraform file creation
+
+## How to Use
+1. Fill out the form with your AWS configuration.
+2. Submit the form to generate a JSON file.
+3. The JSON file will trigger a PowerShell script that creates Terraform files.
+4. Use the Terraform files to set up your AWS infrastructure.
+
+## Getting Started
+To get started with this project, follow these steps:
+1. Clone the repository
+2. Install dependencies
+3. Run the server
+4. Access the form via your web browser
+
+## Requirements
+- Node.js
+- PowerShell
+- Terraform
+
+## Installation
+1. Clone the repo:
+   ```sh
+   git clone https://github.com/yourusername/yourrepo.git
