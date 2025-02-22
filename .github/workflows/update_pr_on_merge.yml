@@ -16,13 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get Pull Request Details
-        id: get_pr_details
+      - name: Update Pull Request on Merge
         run: |
           # Extract details from the pull request
           PR_NUMBER=${{ github.event.pull_request.number }}
-          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
           USER_DESCRIPTION="${{ github.event.pull_request.body }}"
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
           
           # Extract ticket number from the branch name
           TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
@@ -31,12 +30,6 @@ jobs:
           EXTENDED_DESCRIPTION="Ticket Number: $TICKET_NUMBER\nChange:\n$USER_DESCRIPTION"
 
           echo "Extended Description: $EXTENDED_DESCRIPTION"
-          echo "::set-output name=extended_description::$EXTENDED_DESCRIPTION"
-
-      - name: Update Pull Request Description
-        run: |
-          # Get the extended description from the previous step
-          EXTENDED_DESCRIPTION="${{ steps.get_pr_details.outputs.extended_description }}"
 
           # Update the pull request body using GitHub API
           curl -X PATCH \
