@@ -1,0 +1,46 @@
+name: Update Pull Request on Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  pull-requests: write  # Allows the workflow to write to pull requests
+
+jobs:
+  update_on_merge:
+    if: github.event.pull_request.merged == true  # Only run if the pull request was merged
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Get Pull Request Details
+        id: get_pr_details
+        run: |
+          # Extract details from the pull request
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
+          USER_DESCRIPTION="${{ github.event.pull_request.body }}"
+          
+          # Extract ticket number from the branch name
+          TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
+
+          # Prepare the extended description
+          EXTENDED_DESCRIPTION="Ticket Number: $TICKET_NUMBER\nChange:\n$USER_DESCRIPTION"
+
+          echo "Extended Description: $EXTENDED_DESCRIPTION"
+          echo "::set-output name=extended_description::$EXTENDED_DESCRIPTION"
+
+      - name: Update Pull Request Description
+        run: |
+          # Get the extended description from the previous step
+          EXTENDED_DESCRIPTION="${{ steps.get_pr_details.outputs.extended_description }}"
+
+          # Update the pull request body using GitHub API
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
+            -d "{\"body\": \"$EXTENDED_DESCRIPTION\"}"
