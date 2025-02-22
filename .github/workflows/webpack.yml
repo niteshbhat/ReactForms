@@ -2,7 +2,7 @@ name: Update Pull Request Description
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, closed]
 
 permissions:
   pull-requests: write  # Allows the workflow to write to pull requests
@@ -20,7 +20,7 @@ jobs:
         id: get_comments
         run: |
           # Fetch comments from the pull request
-          COMMENTS=$(curl -s -H "Authorization: token ${{ secrets.Nitesh_TOKEN }}" \
+          COMMENTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments)
 
@@ -39,6 +39,7 @@ jobs:
           echo "::set-output name=formatted_comments::$FORMATTED_COMMENTS"
 
       - name: Set Pull Request Description
+        if: github.event.action == 'opened'  # Only run this step if the PR is opened
         run: |
           # Extract details from the pull request
           OWNER="${{ github.actor }}"
@@ -75,3 +76,26 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
             -d "$PR_BODY"
+
+      - name: Update Pull Request on Merge
+        if: github.event.action == 'closed' && github.event.pull_request.merged == true  # Only run if the PR was merged
+        run: |
+          # Extract details from the pull request
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
+          USER_DESCRIPTION="${{ github.event.pull_request.body }}"
+          
+          # Extract ticket number from the branch name
+          TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
+
+          # Prepare the extended description
+          EXTENDED_DESCRIPTION="Ticket Number: $TICKET_NUMBER\nChange:\n$USER_DESCRIPTION"
+
+          echo "Extended Description: $EXTENDED_DESCRIPTION"
+
+          # Update the pull request body using GitHub API
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
+            -d "{\"body\": \"$EXTENDED_DESCRIPTION\"}"
