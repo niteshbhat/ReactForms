@@ -33,12 +33,15 @@ jobs:
           echo "::set-output name=ticket_number::$TICKET_NUMBER"
           echo "::set-output name=environment::$ENVIRONMENT"
 
-      - name: Output Pull Request Details
-        run: |
-          echo "Pull Request Owner: ${{ github.actor }}"
-          echo "Pull Request Title: ${{ github.event.pull_request.title }}"
-          echo "Short Description: ${{ steps.pr_details.outputs.short_description }}"
-          echo "Ticket Number: ${{ steps.pr_details.outputs.ticket_number }}"
-          echo "Environment: ${{ steps.pr_details.outputs.environment }}"
-          echo "Reviewers: ${{ toJson(github.event.pull_request.requested_reviewers) }}"
-          echo "Comments: ${{ github.event.pull_request.body }}"
+      - name: Update Pull Request Description
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            **Pull Request Owner:** ${{ github.actor }}
+            **Pull Request Title:** ${{ github.event.pull_request.title }}
+            **Short Description:** ${{ steps.pr_details.outputs.short_description }}
+            **Ticket Number:** ${{ steps.pr_details.outputs.ticket_number }}
+            **Environment:** ${{ steps.pr_details.outputs.environment }}
+            **Reviewers:** ${{ toJson(github.event.pull_request.requested_reviewers) }}
+            **Comments:** ${{ github.event.pull_request.body }}
