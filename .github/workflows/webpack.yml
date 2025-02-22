@@ -1,28 +1,44 @@
-name: NodeJS with Webpack
+name: Pull Request Management
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    types: [opened, synchronize]
 
 jobs:
-  build:
+  manage_pull_request:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Get Pull Request Details
+        id: pr_details
+        run: |
+          echo "Owner: ${{ github.actor }}"
+          echo "Branch Name: ${{ github.head_ref }}"
+          
+          # Extract ticket number and short description from the branch name
+          BRANCH_NAME="${{ github.head_ref }}"
+          TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
+          SHORT_DESCRIPTION=$(echo "$BRANCH_NAME" | cut -d'-' -f2)
+          ENVIRONMENT=$(echo "$BRANCH_NAME" | cut -d'-' -f3)
 
-    - name: Build
-      run: |
-        npm install
-        npx webpack
+          echo "Short Description: $SHORT_DESCRIPTION"
+          echo "Ticket Number: $TICKET_NUMBER"
+          echo "Environment: $ENVIRONMENT"
+
+          # Output the details for later use
+          echo "::set-output name=short_description::$SHORT_DESCRIPTION"
+          echo "::set-output name=ticket_number::$TICKET_NUMBER"
+          echo "::set-output name=environment::$ENVIRONMENT"
+
+      - name: Output Pull Request Details
+        run: |
+          echo "Pull Request Owner: ${{ github.actor }}"
+          echo "Pull Request Title: ${{ github.event.pull_request.title }}"
+          echo "Short Description: ${{ steps.pr_details.outputs.short_description }}"
+          echo "Ticket Number: ${{ steps.pr_details.outputs.ticket_number }}"
+          echo "Environment: ${{ steps.pr_details.outputs.environment }}"
+          echo "Reviewers: ${{ toJson(github.event.pull_request.requested_reviewers) }}"
+          echo "Comments: ${{ github.event.pull_request.body }}"
