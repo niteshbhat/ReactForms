@@ -16,13 +16,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Get Pull Request Comments
+        id: get_comments
+        run: |
+          # Fetch comments from the pull request
+          COMMENTS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments)
+
+          # Format comments
+          FORMATTED_COMMENTS=""
+          INDEX=1
+          for row in $(echo "${COMMENTS}" | jq -r '.[] | "\(.body) \(.created_at) \(.user.login)"'); do
+            COMMENT_BODY=$(echo $row | cut -d' ' -f1-)
+            COMMENT_DATE=$(echo $row | cut -d' ' -f2)
+            COMMENT_OWNER=$(echo $row | cut -d' ' -f3)
+            FORMATTED_COMMENTS+="$INDEX) $COMMENT_BODY $COMMENT_DATE $COMMENT_OWNER\n"
+            INDEX=$((INDEX + 1))
+          done
+
+          echo "Formatted Comments: $FORMATTED_COMMENTS"
+          echo "::set-output name=formatted_comments::$FORMATTED_COMMENTS"
+
       - name: Set Pull Request Description
         run: |
           # Extract details from the pull request
-          OWNER="niteshbhat"
-          TITLE="Update README.md"
-          USER_DESCRIPTION="hellow"
-          BRANCH_NAME="cnd112-discrption-dev"
+          OWNER="${{ github.actor }}"
+          TITLE="${{ github.event.pull_request.title }}"
+          USER_DESCRIPTION="${{ github.event.pull_request.body }}"
+          BRANCH_NAME="${{ github.head_ref }}"
           
           # Extract ticket number and short description from the branch name
           TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
@@ -40,7 +62,7 @@ jobs:
             --arg short_desc "$SHORT_DESCRIPTION" \
             --arg ticket_num "$TICKET_NUMBER" \
             --arg env "$ENVIRONMENT" \
-            --arg comments "" \
+            --arg comments "${{ steps.get_comments.outputs.formatted_comments }}" \
             '{body: "## Pull Request Details\n\n**Pull Request Owner:** \($owner)\n\n**Pull Request Title:** \($title)\n\n**User Description:**\n\($user_desc)\n\n**Short Description:** \($short_desc)\n\n**Ticket Number:** \($ticket_num)\n\n**Environment:** \($env)\n\n**Comments:**\n\($comments)\n"}'
           )
 
@@ -51,5 +73,5 @@ jobs:
           curl -X PATCH \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/niteshbhat/ReactForms/pulls/10 \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
             -d "$PR_BODY"
