@@ -1,11 +1,3 @@
-## Checklist
-<!-- Please check the following items: -->
-- [ ] I have read the [contributing guidelines](link-to-contributing-guidelines).
-- [ ] My code follows the project's coding style.
-- [ ] I have added tests to cover my changes.
-- [ ] All new and existing tests passed.
-- [ ] I have updated the documentation (if applicable).
-
 ## Type of Change
 <!-- Please select one or more of the following: -->
 - [ ] Bug fix
