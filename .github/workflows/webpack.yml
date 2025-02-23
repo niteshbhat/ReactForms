@@ -31,12 +31,50 @@ jobs:
             COMMENT_BODY=$(echo $row | cut -d' ' -f1-)
             COMMENT_DATE=$(echo $row | cut -d' ' -f2)
             COMMENT_OWNER=$(echo $row | cut -d' ' -f3)
-            FORMATTED_COMMENTS+="$INDEX) $COMMENT_BODY $COMMENT_DATE $COMMENT_OWNER\n"
+            FORMATTED_COMMENTS+="$INDEX) $COMMENT_BODY _($COMMENT_DATE by $COMMENT_OWNER)_\n"
             INDEX=$((INDEX + 1))
           done
 
           echo "Formatted Comments: $FORMATTED_COMMENTS"
           echo "::set-output name=formatted_comments::$FORMATTED_COMMENTS"
+
+      - name: Get Pull Request Commits
+        id: get_commits
+        run: |
+          # Fetch commits from the pull request
+          COMMITS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/commits)
+
+          # Format commits
+          FORMATTED_COMMITS=""
+          INDEX=1
+          for row in $(echo "${COMMITS}" | jq -r '.[] | "\(.commit.message) \(.commit.author.name)"'); do
+            COMMIT_MESSAGE=$(echo $row | cut -d' ' -f1-)
+            COMMIT_AUTHOR=$(echo $row | cut -d' ' -f2)
+            FORMATTED_COMMITS+="$INDEX) **$COMMIT_MESSAGE** _by $COMMIT_AUTHOR_\n"
+            INDEX=$((INDEX + 1))
+          done
+
+          echo "Formatted Commits: $FORMATTED_COMMITS"
+          echo "::set-output name=formatted_commits::$FORMATTED_COMMITS"
+
+      - name: Get Review Approvals
+        id: get_reviews
+        run: |
+          # Fetch reviews from the pull request
+          REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.Nitesh_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews)
+
+          # Format review approvals
+          APPROVALS=""
+          for review in $(echo "${REVIEWS}" | jq -r '.[] | select(.state == "APPROVED") | "\(.user.login)"'); do
+            APPROVALS+="- $review\n"
+          done
+
+          echo "Review Approvals: $APPROVALS"
+          echo "::set-output name=review_approvals::$APPROVALS"
 
       - name: Set Pull Request Description
         if: github.event.action == 'opened'  # Only run this step if the PR is opened
@@ -46,25 +84,24 @@ jobs:
           TITLE="${{ github.event.pull_request.title }}"
           USER_DESCRIPTION="${{ github.event.pull_request.body }}"
           BRANCH_NAME="${{ github.head_ref }}"
-          
+
           # Extract ticket number and short description from the branch name
           TICKET_NUMBER=$(echo "$BRANCH_NAME" | cut -d'-' -f1)
           SHORT_DESCRIPTION=$(echo "$BRANCH_NAME" | cut -d'-' -f2)
           ENVIRONMENT=$(echo "$BRANCH_NAME" | cut -d'-' -f3)
-          
-          # Escape newlines in USER_DESCRIPTION
-          USER_DESCRIPTION_ESCAPED=$(echo "$USER_DESCRIPTION" | sed ':a;N;$!ba;s/\n/\\n/g')
-          
-          # Create the new pull request body with a GUI-like format
+
+          # Create the new pull request body with a more eye-catching format
           PR_BODY=$(jq -n \
             --arg owner "$OWNER" \
             --arg title "$TITLE" \
-            --arg user_desc "$USER_DESCRIPTION_ESCAPED" \
+            --arg user_desc "$USER_DESCRIPTION" \
             --arg short_desc "$SHORT_DESCRIPTION" \
             --arg ticket_num "$TICKET_NUMBER" \
             --arg env "$ENVIRONMENT" \
             --arg comments "${{ steps.get_comments.outputs.formatted_comments }}" \
-            '{body: "## Pull Request Details\n\n**Pull Request Owner:** \($owner)\n\n**Pull Request Title:** \($title)\n\n**User Description:**\n\($user_desc)\n\n**Short Description:** \($short_desc)\n\n**Ticket Number:** \($ticket_num)\n\n**Environment:** \($env)\n\n**Comments:**\n\($comments)\n"}'
+            --arg commits "${{ steps.get_commits.outputs.formatted_commits }}" \
+            --arg approvals "${{ steps.get_reviews.outputs.review_approvals }}" \
+            '{body: "# Pull Request Details\n\n## Overview\n\n**Pull Request Owner:** \($owner)\n\n**Pull Request Title:** \($title)\n\n## Description\n\n\($user_desc)\n\n## Short Description\n\n\($short_desc)\n\n## Ticket Number\n\n\($ticket_num)\n\n## Environment\n\n\($env)\n\n## Comments\n\n\($comments)\n\n## Commits\n\n\($commits)\n\n## Review Approvals\n\n\($approvals)\n"}'
           )
 
           # Debugging: Print the PR_BODY to logs
