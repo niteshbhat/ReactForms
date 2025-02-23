@@ -63,7 +63,7 @@ jobs:
         id: get_reviews
         run: |
           # Fetch reviews from the pull request
-          REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.Nitesh_TOKEN }}" \
+          REVIEWS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews)
 
