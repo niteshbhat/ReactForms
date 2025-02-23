@@ -29,11 +29,14 @@ jobs:
           # Prepare the extended description
           EXTENDED_DESCRIPTION="Merged main into branch: $BRANCH_NAME\n\nUser Description:\n$USER_DESCRIPTION"
 
+          # Escape newlines and quotes for JSON
+          JSON_PAYLOAD=$(jq -n --arg body "$EXTENDED_DESCRIPTION" '{"body": $body}')
+
           echo "Extended Description: $EXTENDED_DESCRIPTION"
 
           # Update the pull request body using GitHub API
           curl -X PATCH \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
-            -d "{\"body\": \"$EXTENDED_DESCRIPTION\"}"
+            https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER \
+            -d "$JSON_PAYLOAD"
