@@ -1,4 +1,4 @@
-# AWS Terraform Generator Using React From (POC) 666
+# AWS Terraform Generator Using React From (POC) 
 
 ## Description
 In this project, I showcase how to create a React form that generates a JSON file, which is then used to dynamically generate Terraform files using PowerShell.
