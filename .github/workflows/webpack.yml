@@ -90,7 +90,7 @@ jobs:
           SHORT_DESCRIPTION=$(echo "$BRANCH_NAME" | cut -d'-' -f2)
           ENVIRONMENT=$(echo "$BRANCH_NAME" | cut -d'-' -f3)
 
-          # Create the new pull request body with a more eye-catching format
+          # Create the new pull request body with the specified format
           PR_BODY=$(jq -n \
             --arg owner "$OWNER" \
             --arg title "$TITLE" \
@@ -101,7 +101,7 @@ jobs:
             --arg comments "${{ steps.get_comments.outputs.formatted_comments }}" \
             --arg commits "${{ steps.get_commits.outputs.formatted_commits }}" \
             --arg approvals "${{ steps.get_reviews.outputs.review_approvals }}" \
-            '{body: "# Pull Request Details\n\n## Overview\n\n**Pull Request Owner:** \($owner)\n\n**Pull Request Title:** \($title)\n\n## Description\n\n\($user_desc)\n\n## Short Description\n\n\($short_desc)\n\n## Ticket Number\n\n\($ticket_num)\n\n## Environment\n\n\($env)\n\n## Comments\n\n\($comments)\n\n## Commits\n\n\($commits)\n\n## Review Approvals\n\n\($approvals)\n"}'
+            '{body: "# Pull Request Details\n\n## Description\n\n\($user_desc)\n\n## Short Description\n\n\($short_desc)\n\n## Overview\n\n**Pull Request Owner:** \($owner)\n\n**Pull Request Title:** \($title)\n\n## Ticket Number\n\n\($ticket_num)\n\n## Environment\n\n\($env)\n\n## Comments\n\n\($comments)\n\n## Commits\n\n\($commits)\n\n## Review Approvals\n\n\($approvals)\n"}'
           )
 
           # Debugging: Print the PR_BODY to logs
