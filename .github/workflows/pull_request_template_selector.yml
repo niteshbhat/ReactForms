@@ -1,0 +1,22 @@
+name: Pull Request Template Selector
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  select-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Branch Name
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          if [[ "$BRANCH_NAME" == cm*-*dev ]]; then
+            echo "Using Development Template"
+            echo "PULL_REQUEST_TEMPLATE=PULL_REQUEST_TEMPLATE_DEV.md" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" == cm*-*SIT ]]; then
+            echo "Using SIT Template"
+            echo "PULL_REQUEST_TEMPLATE=PULL_REQUEST_TEMPLATE_SIT.md" >> $GITHUB_ENV
+          else
+            echo "No matching template found."
+          fi
