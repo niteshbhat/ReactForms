@@ -3,10 +3,10 @@ pull_request_template:
     description: "Use this template for development branches."
     template: "PULL_REQUEST_TEMPLATE_DEV.md"
     branches:
-      - "cm233-*dev"
+      - "cm*-*dev"
 
   - name: "SIT Template"
     description: "Use this template for SIT branches."
     template: "PULL_REQUEST_TEMPLATE_SIT.md"
     branches:
-      - "cm233-*SIT"
+      - "cm*-*SIT"
